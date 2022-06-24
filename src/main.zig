@@ -19,8 +19,8 @@ fn rayColour(r: *const Ray) Colour {
         .z = 1.0,
     };
     return Vec.addv(&[_]Vec{
-        Vec.mulf(&a, 1.0 - t),
-        Vec.mulf(&b, t),
+        a.mulf(1.0 - t),
+        b.mulf(t),
     });
 }
 
@@ -40,8 +40,8 @@ pub fn main() anyerror!void {
     const vertical = Vec{ .y = viewport_height };
     const lower_left_corner = Vec.subv(&[_]Vec{
         origin,
-        Vec.divf(&horizontal, 2.0),
-        Vec.divf(&vertical, 2.0),
+        horizontal.divf(2.0),
+        vertical.divf(2.0),
         Vec{ .z = focal_length },
     });
 
@@ -62,9 +62,9 @@ pub fn main() anyerror!void {
 
             const dir = Vec.addv(&[_]Vec{
                 lower_left_corner,
-                Vec.mulf(&horizontal, u),
-                Vec.mulf(&vertical, v),
-                Vec.mulf(&origin, -1.0),
+                horizontal.mulf(u),
+                vertical.mulf(v),
+                origin.mulf(-1.0),
             });
 
             const ray = Ray{

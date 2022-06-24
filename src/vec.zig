@@ -90,32 +90,32 @@ pub const Vec = struct {
         return v;
     }
 
-    pub fn addf(vec: *const Vec, val: f32) Vec {
-        var v: Vec = vec.*;
+    pub fn addf(self: *const Vec, val: f32) Vec {
+        var v: Vec = self.*;
         v.x += val;
         v.y += val;
         v.z += val;
         return v;
     }
 
-    pub fn subf(vec: *const Vec, val: f32) Vec {
-        var v: Vec = vec.*;
+    pub fn subf(self: *const Vec, val: f32) Vec {
+        var v: Vec = self.*;
         v.x -= val;
         v.y -= val;
         v.z -= val;
         return v;
     }
 
-    pub fn mulf(vec: *const Vec, val: f32) Vec {
-        var v: Vec = vec.*;
+    pub fn mulf(self: *const Vec, val: f32) Vec {
+        var v: Vec = self.*;
         v.x *= val;
         v.y *= val;
         v.z *= val;
         return v;
     }
 
-    pub fn divf(vec: *const Vec, val: f32) Vec {
-        var v: Vec = vec.*;
+    pub fn divf(self: *const Vec, val: f32) Vec {
+        var v: Vec = self.*;
         v.x /= val;
         v.y /= val;
         v.z /= val;
