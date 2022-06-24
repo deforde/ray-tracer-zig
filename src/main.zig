@@ -1,4 +1,6 @@
 const std = @import("std");
+const Colour = @import("vec.zig").Colour;
+const writeColour = @import("util.zig").writeColour;
 
 pub fn main() anyerror!void {
     const image_width = 256;
@@ -20,11 +22,13 @@ pub fn main() anyerror!void {
             const g = @intToFloat(f32, j) / @intToFloat(f32, image_height - 1);
             const b: f32 = 0.25;
 
-            const ir = @floatToInt(i32, 255.999 * r);
-            const ig = @floatToInt(i32, 255.999 * g);
-            const ib = @floatToInt(i32, 255.999 * b);
+            const pixel_colour = Colour{
+                .x = r,
+                .y = g,
+                .z = b,
+            };
 
-            try std.fmt.format(writer, "{} {} {}\n", .{ ir, ig, ib });
+            try writeColour(writer, pixel_colour);
         }
     }
     std.debug.print("\ndone\n", .{});
