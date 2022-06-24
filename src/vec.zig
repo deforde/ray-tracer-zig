@@ -17,9 +17,10 @@ pub const Vec = struct {
         return self.divf(self.len());
     }
 
-    // pub fn dot(self: *Vec, other: *Vec) f32 {
-    // }
-    //
+    pub fn dot(self: *const Vec, other: *const Vec) f32 {
+        return self.x * other.x + self.y * other.y + self.z * other.z;
+    }
+
     // pub fn cross(self: *Vec, other: *Vec) Vec {
     // }
     //

@@ -6,6 +6,9 @@ const Ray = @import("ray.zig").Ray;
 const writeColour = @import("util.zig").writeColour;
 
 fn rayColour(r: *const Ray) Colour {
+    if (hitSphere(&Point{ .z = -1.0 }, 0.5, r)) {
+        return Colour{ .x = 1.0 };
+    }
     const unit_dir = r.dir.unit();
     const t = 0.5 * (unit_dir.y + 1.0);
     const a = Colour{
@@ -22,6 +25,15 @@ fn rayColour(r: *const Ray) Colour {
         a.mulf(1.0 - t),
         b.mulf(t),
     });
+}
+
+fn hitSphere(centre: *const Point, radius: f32, r: *const Ray) bool {
+    const oc = Vec.subv(&[_]Vec{ r.orig, centre.* });
+    const a = r.dir.dot(&r.dir);
+    const b = oc.dot(&r.dir) * 2.0;
+    const c = oc.dot(&oc) - radius * radius;
+    const discriminant = b * b - 4 * a * c;
+    return discriminant > 0.0;
 }
 
 pub fn main() anyerror!void {
@@ -74,7 +86,7 @@ pub fn main() anyerror!void {
 
             const pixel_colour = rayColour(&ray);
 
-            try writeColour(writer, pixel_colour);
+            try writeColour(writer, &pixel_colour);
         }
     }
     std.debug.print("\ndone\n", .{});
