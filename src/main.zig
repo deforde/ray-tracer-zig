@@ -31,14 +31,14 @@ fn rayColour(r: *const Ray) Colour {
 
 fn hitSphere(centre: *const Point, radius: f32, r: *const Ray) f32 {
     const oc = Vec.subv(&[_]Vec{ r.orig, centre.* });
-    const a = r.dir.dot(&r.dir);
-    const b = oc.dot(&r.dir) * 2.0;
-    const c = oc.dot(&oc) - radius * radius;
-    const discriminant = b * b - 4 * a * c;
+    const a = r.dir.lenSqrd();
+    const half_b = oc.dot(&r.dir);
+    const c = oc.lenSqrd() - radius * radius;
+    const discriminant = half_b * half_b - a * c;
     if (discriminant < 0.0) {
         return -1.0;
     }
-    return (-b - std.math.sqrt(discriminant)) / (2.0 * a);
+    return (-half_b - std.math.sqrt(discriminant)) / a;
 }
 
 pub fn main() anyerror!void {
