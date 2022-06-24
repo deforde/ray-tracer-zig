@@ -13,6 +13,7 @@ pub fn main() anyerror!void {
 
     var j: i32 = image_height - 1;
     while (j >= 0) : (j -= 1) {
+        std.debug.print("{}/{}\r", .{ image_height - j, image_height });
         var i: i32 = 0;
         while (i != image_width) : (i += 1) {
             const r = @intToFloat(f32, i) / @intToFloat(f32, image_width - 1);
@@ -26,4 +27,5 @@ pub fn main() anyerror!void {
             try std.fmt.format(writer, "{} {} {}\n", .{ ir, ig, ib });
         }
     }
+    std.debug.print("\ndone\n", .{});
 }
