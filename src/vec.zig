@@ -14,7 +14,7 @@ pub const Vec = struct {
     }
 
     pub fn unit(self: *const Vec) Vec {
-        return self.divf(&[_]f32{self.len()});
+        return self.divf(self.len());
     }
 
     // pub fn dot(self: *Vec, other: *Vec) f32 {
@@ -90,43 +90,35 @@ pub const Vec = struct {
         return v;
     }
 
-    pub fn addf(vec: *const Vec, vals: []const f32) Vec {
+    pub fn addf(vec: *const Vec, val: f32) Vec {
         var v: Vec = vec.*;
-        for (vals) |val| {
-            v.x += val;
-            v.y += val;
-            v.z += val;
-        }
+        v.x += val;
+        v.y += val;
+        v.z += val;
         return v;
     }
 
-    pub fn subf(vec: *const Vec, vals: []const f32) Vec {
+    pub fn subf(vec: *const Vec, val: f32) Vec {
         var v: Vec = vec.*;
-        for (vals) |val| {
-            v.x -= val;
-            v.y -= val;
-            v.z -= val;
-        }
+        v.x -= val;
+        v.y -= val;
+        v.z -= val;
         return v;
     }
 
-    pub fn mulf(vec: *const Vec, vals: []const f32) Vec {
+    pub fn mulf(vec: *const Vec, val: f32) Vec {
         var v: Vec = vec.*;
-        for (vals) |val| {
-            v.x *= val;
-            v.y *= val;
-            v.z *= val;
-        }
+        v.x *= val;
+        v.y *= val;
+        v.z *= val;
         return v;
     }
 
-    pub fn divf(vec: *const Vec, vals: []const f32) Vec {
+    pub fn divf(vec: *const Vec, val: f32) Vec {
         var v: Vec = vec.*;
-        for (vals) |val| {
-            v.x /= val;
-            v.y /= val;
-            v.z /= val;
-        }
+        v.x /= val;
+        v.y /= val;
+        v.z /= val;
         return v;
     }
 };
