@@ -1,74 +1,135 @@
-pub const Vec3 = struct {
-    x: f32,
-    y: f32,
-    z: f32,
+const std = @import("std");
 
-    // pub fn len(self: *Vec3) usize {
+pub const Vec = struct {
+    x: f32 = 0.0,
+    y: f32 = 0.0,
+    z: f32 = 0.0,
+
+    pub fn len(self: *const Vec) f32 {
+        return std.math.sqrt(self.lenSqrd());
+    }
+
+    pub fn lenSqrd(self: *const Vec) f32 {
+        return self.x * self.x + self.y * self.y + self.z * self.z;
+    }
+
+    pub fn unit(self: *const Vec) Vec {
+        return self.divf(&[_]f32{self.len()});
+    }
+
+    // pub fn dot(self: *Vec, other: *Vec) f32 {
     // }
     //
-    // pub fn len_sqrd(self: *Vec3) usize {
+    // pub fn cross(self: *Vec, other: *Vec) Vec {
     // }
     //
-    // pub fn unit(self: *Vec3) Vec3 {
+    // pub fn rand_mm(min: f32, max: f32) Vec {
     // }
     //
-    // pub fn dot(self: *Vec3, other: *Vec3) f32 {
+    // pub fn rand() Vec {
     // }
     //
-    // pub fn cross(self: *Vec3, other: *Vec3) Vec3 {
+    // pub fn rand_unit_sphere() Vec {
     // }
     //
-    // pub fn rand_mm(min: f32, max: f32) Vec3 {
+    // pub fn rand_unit() Vec {
     // }
     //
-    // pub fn rand() Vec3 {
+    // pub fn rand_hemi() Vec {
     // }
     //
-    // pub fn rand_unit_sphere() Vec3 {
+    // pub fn rand_unit_disk() Vec {
     // }
     //
-    // pub fn rand_unit() Vec3 {
+    // pub fn is_near_zero(self: *Vec) bool {
     // }
     //
-    // pub fn rand_hemi() Vec3 {
+    // pub fn reflect(self: *Vec, normal: *Vec) Vec {
     // }
     //
-    // pub fn rand_unit_disk() Vec3 {
-    // }
-    //
-    // pub fn is_near_zero(self: *Vec3) bool {
-    // }
-    //
-    // pub fn reflect(self: *Vec3, normal: *Vec3) Vec3 {
-    // }
-    //
-    // pub fn refract(self: *Vec3, normal: *Vec3, coeff: f32) Vec3 {
+    // pub fn refract(self: *Vec, normal: *Vec, coeff: f32) Vec {
     // }
 
-    // pub fn add_v(vecs: []const Vec3) Vec3 {
-    // }
-    //
-    // pub fn sub_v(vecs: []const Vec3) Vec3 {
-    // }
-    //
-    // pub fn mul_v(vecs: []const Vec3) Vec3 {
-    // }
-    //
-    // pub fn div_v(vecs: []const Vec3) Vec3 {
-    // }
-    //
-    // pub fn add_f(vec: *Vec3, vals: []const f32) Vec3 {
-    // }
-    //
-    // pub fn sub_f(vec: *Vec3, vals: []const f32) Vec3 {
-    // }
-    //
-    // pub fn mul_f(vec: *Vec3, vals: []const f32) Vec3 {
-    // }
-    //
-    // pub fn div_f(vec: *Vec3, vals: []const f32) Vec3 {
-    // }
+    pub fn addv(vecs: []const Vec) Vec {
+        var v = Vec{};
+        for (vecs) |vec| {
+            v.x += vec.x;
+            v.y += vec.y;
+            v.z += vec.z;
+        }
+        return v;
+    }
+
+    pub fn subv(vecs: []const Vec) Vec {
+        var v = Vec{};
+        for (vecs) |vec| {
+            v.x -= vec.x;
+            v.y -= vec.y;
+            v.z -= vec.z;
+        }
+        return v;
+    }
+
+    pub fn mulv(vecs: []const Vec) Vec {
+        var v = Vec{};
+        for (vecs) |vec| {
+            v.x *= vec.x;
+            v.y *= vec.y;
+            v.z *= vec.z;
+        }
+        return v;
+    }
+
+    pub fn divv(vecs: []const Vec) Vec {
+        var v = Vec{};
+        for (vecs) |vec| {
+            v.x /= vec.x;
+            v.y /= vec.y;
+            v.z /= vec.z;
+        }
+        return v;
+    }
+
+    pub fn addf(vec: *const Vec, vals: []const f32) Vec {
+        var v: Vec = vec.*;
+        for (vals) |val| {
+            v.x += val;
+            v.y += val;
+            v.z += val;
+        }
+        return v;
+    }
+
+    pub fn subf(vec: *const Vec, vals: []const f32) Vec {
+        var v: Vec = vec.*;
+        for (vals) |val| {
+            v.x -= val;
+            v.y -= val;
+            v.z -= val;
+        }
+        return v;
+    }
+
+    pub fn mulf(vec: *const Vec, vals: []const f32) Vec {
+        var v: Vec = vec.*;
+        for (vals) |val| {
+            v.x *= val;
+            v.y *= val;
+            v.z *= val;
+        }
+        return v;
+    }
+
+    pub fn divf(vec: *const Vec, vals: []const f32) Vec {
+        var v: Vec = vec.*;
+        for (vals) |val| {
+            v.x /= val;
+            v.y /= val;
+            v.z /= val;
+        }
+        return v;
+    }
 };
 
-pub const Point = Vec3;
-pub const Colour = Vec3;
+pub const Point = Vec;
+pub const Colour = Vec;
