@@ -6,11 +6,13 @@ const Ray = @import("ray.zig").Ray;
 const writeColour = @import("util.zig").writeColour;
 
 fn rayColour(r: *const Ray) Colour {
-    if (hitSphere(&Point{ .z = -1.0 }, 0.5, r)) {
-        return Colour{ .x = 1.0 };
+    var t = hitSphere(&Point{ .z = -1.0 }, 0.5, r);
+    if (t > 0.0) {
+        const n = Vec.unit(&Vec.subv(&[_]Vec{ r.at(t), Vec{ .z = -1.0 } }));
+        return n.addf(1.0).mulf(0.5);
     }
     const unit_dir = r.dir.unit();
-    const t = 0.5 * (unit_dir.y + 1.0);
+    t = 0.5 * (unit_dir.y + 1.0);
     const a = Colour{
         .x = 1.0,
         .y = 1.0,
@@ -27,13 +29,16 @@ fn rayColour(r: *const Ray) Colour {
     });
 }
 
-fn hitSphere(centre: *const Point, radius: f32, r: *const Ray) bool {
+fn hitSphere(centre: *const Point, radius: f32, r: *const Ray) f32 {
     const oc = Vec.subv(&[_]Vec{ r.orig, centre.* });
     const a = r.dir.dot(&r.dir);
     const b = oc.dot(&r.dir) * 2.0;
     const c = oc.dot(&oc) - radius * radius;
     const discriminant = b * b - 4 * a * c;
-    return discriminant > 0.0;
+    if (discriminant < 0.0) {
+        return -1.0;
+    }
+    return (-b - std.math.sqrt(discriminant)) / (2.0 * a);
 }
 
 pub fn main() anyerror!void {

@@ -52,8 +52,8 @@ pub const Vec = struct {
     // }
 
     pub fn addv(vecs: []const Vec) Vec {
-        var v = Vec{};
-        for (vecs) |vec| {
+        var v = vecs[0];
+        for (vecs[1..]) |vec| {
             v.x += vec.x;
             v.y += vec.y;
             v.z += vec.z;
@@ -62,8 +62,8 @@ pub const Vec = struct {
     }
 
     pub fn subv(vecs: []const Vec) Vec {
-        var v = Vec{};
-        for (vecs) |vec| {
+        var v = vecs[0];
+        for (vecs[1..]) |vec| {
             v.x -= vec.x;
             v.y -= vec.y;
             v.z -= vec.z;
@@ -72,8 +72,8 @@ pub const Vec = struct {
     }
 
     pub fn mulv(vecs: []const Vec) Vec {
-        var v = Vec{};
-        for (vecs) |vec| {
+        var v = vecs[0];
+        for (vecs[1..]) |vec| {
             v.x *= vec.x;
             v.y *= vec.y;
             v.z *= vec.z;
@@ -82,8 +82,8 @@ pub const Vec = struct {
     }
 
     pub fn divv(vecs: []const Vec) Vec {
-        var v = Vec{};
-        for (vecs) |vec| {
+        var v = vecs[0];
+        for (vecs[1..]) |vec| {
             v.x /= vec.x;
             v.y /= vec.y;
             v.z /= vec.z;
