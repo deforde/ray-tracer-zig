@@ -3,16 +3,19 @@ const Colour = @import("vec.zig").Colour;
 const Point = @import("vec.zig").Point;
 const Vec = @import("vec.zig").Vec;
 const Ray = @import("ray.zig").Ray;
+const Hittable = @import("hittable.zig").Hittable;
+const HitRecord = @import("hittable.zig").HitRecord;
+const HittableList = @import("hittable_list.zig").HittableList;
+const Sphere = @import("sphere.zig").Sphere;
 const writeColour = @import("util.zig").writeColour;
 
-fn rayColour(r: *const Ray) Colour {
-    var t = hitSphere(&Point{ .z = -1.0 }, 0.5, r);
-    if (t > 0.0) {
-        const n = Vec.unit(&Vec.subv(&[_]Vec{ r.at(t), Vec{ .z = -1.0 } }));
-        return n.addf(1.0).mulf(0.5);
+fn rayColour(r: *const Ray, world: *const HittableList) Colour {
+    var rec = HitRecord{};
+    if (world.hit(r, 0.0, std.math.floatMax(f32), &rec)) {
+        return Vec.addv(&[_]Vec{ rec.n, Colour{ .x = 1, .y = 1, .z = 1 } }).mulf(0.5);
     }
     const unit_dir = r.dir.unit();
-    t = 0.5 * (unit_dir.y + 1.0);
+    const t = 0.5 * (unit_dir.y + 1.0);
     const a = Colour{
         .x = 1.0,
         .y = 1.0,
@@ -46,6 +49,13 @@ pub fn main() anyerror!void {
     const aspect_ratio = 16.0 / 9.0;
     const image_width = 400;
     const image_height = @floatToInt(i32, @intToFloat(f32, image_width) / aspect_ratio);
+
+    // World
+    var world = HittableList{};
+    const sphere_1 = Hittable{ .sphere = Sphere{ .centre = Point{ .z = -1 }, .radius = 0.5 } };
+    const sphere_2 = Hittable{ .sphere = Sphere{ .centre = Point{ .y = -100.5, .z = -1 }, .radius = 100 } };
+    world.add(&sphere_1);
+    world.add(&sphere_2);
 
     // Camera
     const viewport_height = 2.0;
@@ -89,7 +99,7 @@ pub fn main() anyerror!void {
                 .dir = dir,
             };
 
-            const pixel_colour = rayColour(&ray);
+            const pixel_colour = rayColour(&ray, &world);
 
             try writeColour(writer, &pixel_colour);
         }
