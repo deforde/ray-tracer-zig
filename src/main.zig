@@ -7,6 +7,8 @@ const Hittable = @import("hittable.zig").Hittable;
 const HitRecord = @import("hittable.zig").HitRecord;
 const HittableList = @import("hittable_list.zig").HittableList;
 const Sphere = @import("sphere.zig").Sphere;
+const Camera = @import("camera.zig").Camera;
+const randomf = @import("util.zig").randomf;
 const writeColour = @import("util.zig").writeColour;
 
 fn rayColour(r: *const Ray, world: *const HittableList) Colour {
@@ -49,6 +51,7 @@ pub fn main() anyerror!void {
     const aspect_ratio = 16.0 / 9.0;
     const image_width = 400;
     const image_height = @floatToInt(i32, @intToFloat(f32, image_width) / aspect_ratio);
+    const samples_per_pixel = 100;
 
     // World
     var world = HittableList{};
@@ -58,19 +61,8 @@ pub fn main() anyerror!void {
     world.add(&sphere_2);
 
     // Camera
-    const viewport_height = 2.0;
-    const viewport_width = aspect_ratio * viewport_height;
-    const focal_length = 1.0;
-
-    const origin = Point{};
-    const horizontal = Vec{ .x = viewport_width };
-    const vertical = Vec{ .y = viewport_height };
-    const lower_left_corner = Vec.subv(&[_]Vec{
-        origin,
-        horizontal.divf(2.0),
-        vertical.divf(2.0),
-        Vec{ .z = focal_length },
-    });
+    var cam = Camera{};
+    cam.init();
 
     var file = try std.fs.cwd().createFile("img.ppm", .{});
     defer file.close();
@@ -84,24 +76,19 @@ pub fn main() anyerror!void {
         std.debug.print("{}/{}\r", .{ image_height - j, image_height });
         var i: i32 = 0;
         while (i != image_width) : (i += 1) {
-            const u = @intToFloat(f32, i) / @intToFloat(f32, image_width - 1);
-            const v = @intToFloat(f32, j) / @intToFloat(f32, image_height - 1);
+            var pixel_colour = Colour{};
+            var s: usize = 0;
+            while (s < samples_per_pixel) : (s += 1) {
+                const u = (@intToFloat(f32, i) + randomf()) / @intToFloat(f32, image_width - 1);
+                const v = (@intToFloat(f32, j) + randomf()) / @intToFloat(f32, image_height - 1);
+                const r = cam.getRay(u, v);
+                pixel_colour = Vec.addv(&[_]Vec{
+                    pixel_colour,
+                    rayColour(&r, &world),
+                });
+            }
 
-            const dir = Vec.addv(&[_]Vec{
-                lower_left_corner,
-                horizontal.mulf(u),
-                vertical.mulf(v),
-                origin.mulf(-1.0),
-            });
-
-            const ray = Ray{
-                .orig = origin,
-                .dir = dir,
-            };
-
-            const pixel_colour = rayColour(&ray, &world);
-
-            try writeColour(writer, &pixel_colour);
+            try writeColour(writer, &pixel_colour, samples_per_pixel);
         }
     }
     std.debug.print("\ndone\n", .{});
