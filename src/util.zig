@@ -17,12 +17,12 @@ pub fn writeColour(writer: std.fs.File.Writer, pixel_colour: *const Colour, samp
     try std.fmt.format(writer, "{} {} {}\n", .{ ir, ig, ib });
 }
 
-pub fn randomf() f32 {
+pub fn randf() f32 {
     return rand_impl.random().float(f32);
 }
 
-pub fn randomfmm(min: f32, max: f32) f32 {
-    return min * (max - min) * randomf();
+pub fn randfmm(min: f32, max: f32) f32 {
+    return min + (max - min) * randf();
 }
 
 pub fn clamp(x: f32, min: f32, max: f32) f32 {

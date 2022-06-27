@@ -1,4 +1,6 @@
 const std = @import("std");
+const randf = @import("util.zig").randf;
+const randfmm = @import("util.zig").randfmm;
 
 pub const Vec = struct {
     x: f32 = 0.0,
@@ -23,16 +25,33 @@ pub const Vec = struct {
 
     // pub fn cross(self: *Vec, other: *Vec) Vec {
     // }
-    //
-    // pub fn rand_mm(min: f32, max: f32) Vec {
-    // }
-    //
-    // pub fn rand() Vec {
-    // }
-    //
-    // pub fn rand_unit_sphere() Vec {
-    // }
-    //
+
+    pub fn randmm(min: f32, max: f32) Vec {
+        return Vec{
+            .x = randfmm(min, max),
+            .y = randfmm(min, max),
+            .z = randfmm(min, max),
+        };
+    }
+
+    pub fn rand() Vec {
+        return Vec{
+            .x = randf(),
+            .y = randf(),
+            .z = randf(),
+        };
+    }
+
+    pub fn randUnitSphere() Vec {
+        while (true) {
+            const p = Vec.randmm(-1.0, 1.0);
+            if (p.lenSqrd() >= 1.0) {
+                continue;
+            }
+            return p;
+        }
+    }
+
     // pub fn rand_unit() Vec {
     // }
     //

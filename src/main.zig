@@ -8,13 +8,20 @@ const HitRecord = @import("hittable.zig").HitRecord;
 const HittableList = @import("hittable_list.zig").HittableList;
 const Sphere = @import("sphere.zig").Sphere;
 const Camera = @import("camera.zig").Camera;
-const randomf = @import("util.zig").randomf;
+const randf = @import("util.zig").randf;
 const writeColour = @import("util.zig").writeColour;
 
-fn rayColour(r: *const Ray, world: *const HittableList) Colour {
+fn rayColour(r: *const Ray, world: *const HittableList, depth: i32) Colour {
     var rec = HitRecord{};
+
+    if (depth <= 0) {
+        return Colour{};
+    }
+
     if (world.hit(r, 0.0, std.math.floatMax(f32), &rec)) {
-        return Vec.addv(&[_]Vec{ rec.n, Colour{ .x = 1, .y = 1, .z = 1 } }).mulf(0.5);
+        const target = Vec.addv(&[_]Vec{ rec.p, rec.n, Vec.randUnitSphere() });
+        const new_ray = Ray{ .orig = rec.p, .dir = Vec.subv(&[_]Vec{ target, rec.p }) };
+        return rayColour(&new_ray, world, depth - 1).mulf(0.5);
     }
     const unit_dir = r.dir.unit();
     const t = 0.5 * (unit_dir.y + 1.0);
@@ -52,6 +59,7 @@ pub fn main() anyerror!void {
     const image_width = 400;
     const image_height = @floatToInt(i32, @intToFloat(f32, image_width) / aspect_ratio);
     const samples_per_pixel = 100;
+    const max_depth = 50;
 
     // World
     var world = HittableList{};
@@ -79,12 +87,12 @@ pub fn main() anyerror!void {
             var pixel_colour = Colour{};
             var s: usize = 0;
             while (s < samples_per_pixel) : (s += 1) {
-                const u = (@intToFloat(f32, i) + randomf()) / @intToFloat(f32, image_width - 1);
-                const v = (@intToFloat(f32, j) + randomf()) / @intToFloat(f32, image_height - 1);
+                const u = (@intToFloat(f32, i) + randf()) / @intToFloat(f32, image_width - 1);
+                const v = (@intToFloat(f32, j) + randf()) / @intToFloat(f32, image_height - 1);
                 const r = cam.getRay(u, v);
                 pixel_colour = Vec.addv(&[_]Vec{
                     pixel_colour,
-                    rayColour(&r, &world),
+                    rayColour(&r, &world, max_depth),
                 });
             }
 
