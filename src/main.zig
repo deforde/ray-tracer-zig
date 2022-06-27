@@ -19,7 +19,7 @@ fn rayColour(r: *const Ray, world: *const HittableList, depth: i32) Colour {
     }
 
     if (world.hit(r, 0.0, std.math.floatMax(f32), &rec)) {
-        const target = Vec.addv(&[_]Vec{ rec.p, rec.n, Vec.randUnitSphere() });
+        const target = Vec.addv(&[_]Vec{ rec.p, rec.n, Vec.randUnit() });
         const new_ray = Ray{ .orig = rec.p, .dir = Vec.subv(&[_]Vec{ target, rec.p }) };
         return rayColour(&new_ray, world, depth - 1).mulf(0.5);
     }

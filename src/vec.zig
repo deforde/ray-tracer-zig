@@ -52,9 +52,10 @@ pub const Vec = struct {
         }
     }
 
-    // pub fn rand_unit() Vec {
-    // }
-    //
+    pub fn randUnit() Vec {
+        return randUnitSphere().unit();
+    }
+
     // pub fn rand_hemi() Vec {
     // }
     //
