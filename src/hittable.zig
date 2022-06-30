@@ -2,10 +2,12 @@ const Point = @import("vec.zig").Point;
 const Vec = @import("vec.zig").Vec;
 const Ray = @import("ray.zig").Ray;
 const Sphere = @import("sphere.zig").Sphere;
+const Material = @import("material.zig").Material;
 
 pub const HitRecord = struct {
     p: Point = Point{},
     n: Vec = Vec{},
+    m: ?*const Material = null,
     t: f32 = 0.0,
     front_face: bool = false,
 

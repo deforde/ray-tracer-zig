@@ -3,10 +3,12 @@ const Point = @import("vec.zig").Point;
 const Vec = @import("vec.zig").Vec;
 const Ray = @import("ray.zig").Ray;
 const HitRecord = @import("hittable.zig").HitRecord;
+const Material = @import("material.zig").Material;
 
 pub const Sphere = struct {
     centre: Point,
     radius: f32,
+    mat: *const Material,
 
     pub fn hit(self: *const Sphere, r: *const Ray, t_min: f32, t_max: f32, rec: *HitRecord) bool {
         const oc = Vec.subv(&[_]Vec{ r.orig, self.centre });
@@ -33,6 +35,7 @@ pub const Sphere = struct {
         const out_n = Vec.subv(&[_]Vec{ rec.p, self.centre }).divf(self.radius);
         rec.setFaceNormal(r, &out_n);
         rec.n = Vec.subv(&[_]Vec{ rec.p, self.centre }).divf(self.radius);
+        rec.m = self.mat;
 
         return true;
     }

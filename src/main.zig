@@ -8,10 +8,13 @@ const HitRecord = @import("hittable.zig").HitRecord;
 const HittableList = @import("hittable_list.zig").HittableList;
 const Sphere = @import("sphere.zig").Sphere;
 const Camera = @import("camera.zig").Camera;
+const Material = @import("material.zig").Material;
+const Lambertian = @import("lambertian.zig").Lambertian;
+const Metal = @import("metal.zig").Metal;
 const randf = @import("util.zig").randf;
 const writeColour = @import("util.zig").writeColour;
 
-fn rayColour(r: *const Ray, world: *const HittableList, depth: i32) Colour {
+fn rayColour(r: *const Ray, world: *const HittableList, depth: i32) anyerror!Colour {
     var rec = HitRecord{};
 
     if (depth <= 0) {
@@ -19,9 +22,12 @@ fn rayColour(r: *const Ray, world: *const HittableList, depth: i32) Colour {
     }
 
     if (world.hit(r, 0.0, std.math.floatMax(f32), &rec)) {
-        const target = Vec.addv(&[_]Vec{ rec.p, Vec.randHemi(&rec.n) });
-        const new_ray = Ray{ .orig = rec.p, .dir = Vec.subv(&[_]Vec{ target, rec.p }) };
-        return rayColour(&new_ray, world, depth - 1).mulf(0.5);
+        var scattered = Ray{};
+        var att = Colour{};
+        if (rec.m.?.scatter(r, &rec, &att, &scattered)) {
+            return Vec.mulv(&[_]Vec{ att, try rayColour(&scattered, world, depth - 1) });
+        }
+        return Colour{};
     }
     const unit_dir = r.dir.unit();
     const t = 0.5 * (unit_dir.y + 1.0);
@@ -63,10 +69,18 @@ pub fn main() anyerror!void {
 
     // World
     var world = HittableList{};
-    const sphere_1 = Hittable{ .sphere = Sphere{ .centre = Point{ .z = -1 }, .radius = 0.5 } };
-    const sphere_2 = Hittable{ .sphere = Sphere{ .centre = Point{ .y = -100.5, .z = -1 }, .radius = 100 } };
-    world.add(&sphere_1);
-    world.add(&sphere_2);
+    const mat_gnd = Material{ .lambertian = Lambertian{ .albedo = Colour{ .x = 0.8, .y = 0.8 } } };
+    const mat_centre = Material{ .lambertian = Lambertian{ .albedo = Colour{ .x = 0.7, .y = 0.3, .z = 0.3 } } };
+    const mat_left = Material{ .metal = Metal{ .albedo = Colour{ .x = 0.8, .y = 0.8, .z = 0.8 } } };
+    const mat_right = Material{ .metal = Metal{ .albedo = Colour{ .x = 0.8, .y = 0.6, .z = 0.2 } } };
+    const sphere_gnd = Hittable{ .sphere = Sphere{ .centre = Point{ .y = -100.5, .z = -1 }, .radius = 100, .mat = &mat_gnd } };
+    const sphere_centre = Hittable{ .sphere = Sphere{ .centre = Point{ .z = -1 }, .radius = 0.5, .mat = &mat_centre } };
+    const sphere_left = Hittable{ .sphere = Sphere{ .centre = Point{ .x = -1, .z = -1 }, .radius = 0.5, .mat = &mat_left } };
+    const sphere_right = Hittable{ .sphere = Sphere{ .centre = Point{ .x = 1, .z = -1 }, .radius = 0.5, .mat = &mat_right } };
+    world.add(&sphere_gnd);
+    world.add(&sphere_centre);
+    world.add(&sphere_left);
+    world.add(&sphere_right);
 
     // Camera
     var cam = Camera{};
@@ -92,7 +106,7 @@ pub fn main() anyerror!void {
                 const r = cam.getRay(u, v);
                 pixel_colour = Vec.addv(&[_]Vec{
                     pixel_colour,
-                    rayColour(&r, &world, max_depth),
+                    try rayColour(&r, &world, max_depth),
                 });
             }
 

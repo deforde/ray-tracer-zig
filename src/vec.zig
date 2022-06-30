@@ -66,13 +66,17 @@ pub const Vec = struct {
 
     // pub fn rand_unit_disk() Vec {
     // }
-    //
-    // pub fn is_near_zero(self: *Vec) bool {
-    // }
-    //
-    // pub fn reflect(self: *Vec, normal: *Vec) Vec {
-    // }
-    //
+
+    pub fn isNearZero(self: *const Vec) bool {
+        const s = 1e-8;
+        return (@fabs(self.x) < s) and (@fabs(self.y) < s) and (@fabs(self.z) < s);
+    }
+
+    pub fn reflect(self: *const Vec, n: *const Vec) Vec {
+        const u = n.mulf(-2.0 * self.dot(n));
+        return Vec.addv(&[_]Vec{ self.*, u });
+    }
+
     // pub fn refract(self: *Vec, normal: *Vec, coeff: f32) Vec {
     // }
 
