@@ -56,9 +56,14 @@ pub const Vec = struct {
         return randUnitSphere().unit();
     }
 
-    // pub fn rand_hemi() Vec {
-    // }
-    //
+    pub fn randHemi(n: *const Vec) Vec {
+        const v = randUnitSphere();
+        if (v.dot(n) > 0.0) {
+            return v;
+        }
+        return v.mulf(-1.0);
+    }
+
     // pub fn rand_unit_disk() Vec {
     // }
     //
