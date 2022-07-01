@@ -71,11 +71,9 @@ pub fn main() anyerror!void {
     // World
     var world = HittableList{};
     const mat_gnd = Material{ .lambertian = Lambertian{ .albedo = Colour{ .x = 0.8, .y = 0.8 } } };
-    // const mat_centre = Material{ .lambertian = Lambertian{ .albedo = Colour{ .x = 0.7, .y = 0.3, .z = 0.3 } } };
-    // const mat_left = Material{ .metal = Metal{ .albedo = Colour{ .x = 0.8, .y = 0.8, .z = 0.8 }, .fuzz = 0.3 } };
-    const mat_centre = Material{ .dielectric = Dielectric{ .refr_idx = 1.5 } };
+    const mat_centre = Material{ .lambertian = Lambertian{ .albedo = Colour{ .x = 0.1, .y = 0.2, .z = 0.5 } } };
     const mat_left = Material{ .dielectric = Dielectric{ .refr_idx = 1.5 } };
-    const mat_right = Material{ .metal = Metal{ .albedo = Colour{ .x = 0.8, .y = 0.6, .z = 0.2 }, .fuzz = 1.0 } };
+    const mat_right = Material{ .metal = Metal{ .albedo = Colour{ .x = 0.8, .y = 0.6, .z = 0.2 }, .fuzz = 0.0 } };
     const sphere_gnd = Hittable{ .sphere = Sphere{ .centre = Point{ .y = -100.5, .z = -1 }, .radius = 100, .mat = &mat_gnd } };
     const sphere_centre = Hittable{ .sphere = Sphere{ .centre = Point{ .z = -1 }, .radius = 0.5, .mat = &mat_centre } };
     const sphere_left = Hittable{ .sphere = Sphere{ .centre = Point{ .x = -1, .z = -1 }, .radius = 0.5, .mat = &mat_left } };
