@@ -21,7 +21,7 @@ fn rayColour(r: *const Ray, world: *const HittableList, depth: i32) anyerror!Col
         return Colour{};
     }
 
-    if (world.hit(r, 0.0, std.math.floatMax(f32), &rec)) {
+    if (world.hit(r, 0.001, std.math.floatMax(f32), &rec)) {
         var scattered = Ray{};
         var att = Colour{};
         if (rec.m.?.scatter(r, &rec, &att, &scattered)) {

@@ -45,15 +45,15 @@ pub const Vec = struct {
     pub fn randUnitSphere() Vec {
         while (true) {
             const p = Vec.randmm(-1.0, 1.0);
-            if (p.lenSqrd() >= 1.0) {
-                continue;
+            if (p.lenSqrd() < 1.0) {
+                return p;
             }
-            return p;
         }
     }
 
     pub fn randUnit() Vec {
-        return randUnitSphere().unit();
+        // return randUnitSphere().unit();
+        return Vec.randmm(-1.0, 1.0).unit(); // TODO: Check this
     }
 
     pub fn randHemi(n: *const Vec) Vec {
