@@ -11,8 +11,8 @@ pub const Dielectric = struct {
         att.* = Colour{ .x = 1, .y = 1, .z = 1 };
         const refr_ratio = if (rec.front_face) 1 / self.refr_idx else self.refr_idx;
 
-        const unit_dir = r.dir.unit().mulf(-1);
-        const cos_theta = std.math.min(rec.n.dot(&unit_dir), 1);
+        const unit_dir = r.dir.unit();
+        const cos_theta = std.math.min(unit_dir.mulf(-1).dot(&rec.n), 1);
         const sin_theta = std.math.sqrt(1 - cos_theta * cos_theta);
 
         const can_refr = refr_ratio * sin_theta <= 1;
