@@ -34,7 +34,6 @@ pub const Sphere = struct {
         rec.p = r.at(rec.t);
         const out_n = Vec.subv(&[_]Vec{ rec.p, self.centre }).divf(self.radius);
         rec.setFaceNormal(r, &out_n);
-        rec.n = Vec.subv(&[_]Vec{ rec.p, self.centre }).divf(self.radius);
         rec.m = self.mat;
 
         return true;

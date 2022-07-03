@@ -16,12 +16,11 @@ const randf = @import("util.zig").randf;
 const writeColour = @import("util.zig").writeColour;
 
 fn rayColour(r: *const Ray, world: *const HittableList, depth: i32) anyerror!Colour {
-    var rec = HitRecord{};
-
     if (depth <= 0) {
         return Colour{};
     }
 
+    var rec = HitRecord{};
     if (world.hit(r, 0.001, std.math.floatMax(f32), &rec)) {
         var scattered = Ray{};
         var att = Colour{};

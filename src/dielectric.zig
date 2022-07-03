@@ -12,10 +12,11 @@ pub const Dielectric = struct {
         const refr_ratio = if (rec.front_face) 1 / self.refr_idx else self.refr_idx;
 
         const unit_dir = r.dir.unit();
-        const cos_theta = std.math.min(unit_dir.mulf(-1).dot(&rec.n), 1);
+        const dot_prod = unit_dir.mulf(-1).dot(&rec.n);
+        const cos_theta = std.math.min(dot_prod, 1);
         const sin_theta = std.math.sqrt(1 - cos_theta * cos_theta);
 
-        const can_refr = refr_ratio * sin_theta <= 1;
+        const can_refr = (refr_ratio * sin_theta) <= 1;
         const dir = blk: {
             if (can_refr) {
                 break :blk unit_dir.refract(&rec.n, refr_ratio);

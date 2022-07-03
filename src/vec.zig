@@ -78,9 +78,15 @@ pub const Vec = struct {
     }
 
     pub fn refract(self: *const Vec, n: *const Vec, c: f32) Vec {
-        const t = std.math.min(self.mulf(-1).dot(n), 1);
-        const perp = Vec.addv(&[_]Vec{ self.*, n.mulf(t) }).mulf(c);
-        const para = n.mulf(-1 * std.math.sqrt(std.math.fabs(1 - perp.lenSqrd())));
+        const dot_prod = self.mulf(-1).dot(n);
+        const cos_theta = std.math.min(dot_prod, 1);
+
+        const a = n.mulf(cos_theta);
+        const b = Vec.addv(&[_]Vec{ self.*, a });
+
+        const perp = b.mulf(c);
+        const para = n.mulf(-std.math.sqrt(std.math.fabs(1 - perp.lenSqrd())));
+
         return Vec.addv(&[_]Vec{ perp, para });
     }
 
