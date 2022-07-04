@@ -65,8 +65,17 @@ pub const Vec = struct {
         return v.mulf(-1.0);
     }
 
-    // pub fn rand_unit_disk() Vec {
-    // }
+    pub fn randUnitDisk() Vec {
+        while (true) {
+            const p = Vec{
+                .x = randfmm(-1, 1),
+                .y = randfmm(-1, 1),
+            };
+            if (p.lenSqrd() < 1) {
+                return p;
+            }
+        }
+    }
 
     pub fn isNearZero(self: *const Vec) bool {
         const s = 1e-8;

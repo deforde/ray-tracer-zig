@@ -67,9 +67,11 @@ pub fn main() anyerror!void {
     const samples_per_pixel = 100;
     const max_depth = 50;
     const vfov = 20.0;
-    const lookfrom = Point{ .x = -2, .y = 2, .z = 1 };
+    const lookfrom = Point{ .x = 3, .y = 3, .z = 2 };
     const lookat = Point{ .z = -1 };
     const vup = Vec{ .y = 1 };
+    const dist_to_focus = Vec.subv(&[_]Vec{ lookfrom, lookat }).len();
+    const aperture = 2.0;
 
     // World
     var world = HittableList{};
@@ -90,7 +92,7 @@ pub fn main() anyerror!void {
 
     // Camera
     var cam = Camera{};
-    cam.init(&lookfrom, &lookat, &vup, vfov, aspect_ratio);
+    cam.init(&lookfrom, &lookat, &vup, vfov, aspect_ratio, aperture, dist_to_focus);
 
     var file = try std.fs.cwd().createFile("img.ppm", .{});
     defer file.close();
