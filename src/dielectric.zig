@@ -3,6 +3,8 @@ const Vec = @import("vec.zig").Vec;
 const Colour = @import("vec.zig").Colour;
 const Ray = @import("ray.zig").Ray;
 const HitRecord = @import("hittable.zig").HitRecord;
+const reflectance = @import("util.zig").reflectance;
+const randf = @import("util.zig").randf;
 
 pub const Dielectric = struct {
     refr_idx: f32,
@@ -18,10 +20,10 @@ pub const Dielectric = struct {
 
         const can_refr = (refr_ratio * sin_theta) <= 1;
         const dir = blk: {
-            if (can_refr) {
-                break :blk unit_dir.refract(&rec.n, refr_ratio);
+            if (!can_refr or (reflectance(cos_theta, refr_ratio) > randf())) {
+                break :blk unit_dir.reflect(&rec.n);
             }
-            break :blk unit_dir.reflect(&rec.n);
+            break :blk unit_dir.refract(&rec.n, refr_ratio);
         };
 
         s.* = Ray{ .orig = rec.p, .dir = dir };

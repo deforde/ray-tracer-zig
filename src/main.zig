@@ -76,10 +76,12 @@ pub fn main() anyerror!void {
     const sphere_gnd = Hittable{ .sphere = Sphere{ .centre = Point{ .y = -100.5, .z = -1 }, .radius = 100, .mat = &mat_gnd } };
     const sphere_centre = Hittable{ .sphere = Sphere{ .centre = Point{ .z = -1 }, .radius = 0.5, .mat = &mat_centre } };
     const sphere_left = Hittable{ .sphere = Sphere{ .centre = Point{ .x = -1, .z = -1 }, .radius = 0.5, .mat = &mat_left } };
+    const inner_sphere_left = Hittable{ .sphere = Sphere{ .centre = Point{ .x = -1, .z = -1 }, .radius = -0.4, .mat = &mat_left } };
     const sphere_right = Hittable{ .sphere = Sphere{ .centre = Point{ .x = 1, .z = -1 }, .radius = 0.5, .mat = &mat_right } };
     world.add(&sphere_gnd);
     world.add(&sphere_centre);
     world.add(&sphere_left);
+    world.add(&inner_sphere_left);
     world.add(&sphere_right);
 
     // Camera
