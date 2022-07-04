@@ -13,7 +13,11 @@ const Lambertian = @import("lambertian.zig").Lambertian;
 const Metal = @import("metal.zig").Metal;
 const Dielectric = @import("dielectric.zig").Dielectric;
 const randf = @import("util.zig").randf;
+const randfmm = @import("util.zig").randfmm;
 const writeColour = @import("util.zig").writeColour;
+
+const MAX_NUM_RANDOM_SPHERES = 23 * 23;
+const TOTAL_NUM_OBJECTS = MAX_NUM_RANDOM_SPHERES + 4;
 
 fn rayColour(r: *const Ray, world: *const HittableList, depth: i32) anyerror!Colour {
     if (depth <= 0) {
@@ -61,34 +65,58 @@ fn hitSphere(centre: *const Point, radius: f32, r: *const Ray) f32 {
 
 pub fn main() anyerror!void {
     // Image
-    const aspect_ratio = 16.0 / 9.0;
+    const aspect_ratio = 3.0 / 2.0;
     const image_width = 400;
     const image_height = @floatToInt(i32, @intToFloat(f32, image_width) / aspect_ratio);
     const samples_per_pixel = 100;
     const max_depth = 50;
     const vfov = 20.0;
-    const lookfrom = Point{ .x = 3, .y = 3, .z = 2 };
-    const lookat = Point{ .z = -1 };
+    const lookfrom = Point{ .x = 13, .y = 2, .z = 3 };
+    const lookat = Point{};
     const vup = Vec{ .y = 1 };
-    const dist_to_focus = Vec.subv(&[_]Vec{ lookfrom, lookat }).len();
-    const aperture = 2.0;
+    const dist_to_focus = 10.0;
+    const aperture = 0.1;
 
     // World
     var world = HittableList{};
-    const mat_gnd = Material{ .lambertian = Lambertian{ .albedo = Colour{ .x = 0.8, .y = 0.8 } } };
-    const mat_centre = Material{ .lambertian = Lambertian{ .albedo = Colour{ .x = 0.1, .y = 0.2, .z = 0.5 } } };
-    const mat_left = Material{ .dielectric = Dielectric{ .refr_idx = 1.5 } };
-    const mat_right = Material{ .metal = Metal{ .albedo = Colour{ .x = 0.8, .y = 0.6, .z = 0.2 }, .fuzz = 0.0 } };
-    const sphere_gnd = Hittable{ .sphere = Sphere{ .centre = Point{ .y = -100.5, .z = -1 }, .radius = 100, .mat = &mat_gnd } };
-    const sphere_centre = Hittable{ .sphere = Sphere{ .centre = Point{ .z = -1 }, .radius = 0.5, .mat = &mat_centre } };
-    const sphere_left = Hittable{ .sphere = Sphere{ .centre = Point{ .x = -1, .z = -1 }, .radius = 0.5, .mat = &mat_left } };
-    const inner_sphere_left = Hittable{ .sphere = Sphere{ .centre = Point{ .x = -1, .z = -1 }, .radius = -0.45, .mat = &mat_left } };
-    const sphere_right = Hittable{ .sphere = Sphere{ .centre = Point{ .x = 1, .z = -1 }, .radius = 0.5, .mat = &mat_right } };
+    var materials: [MAX_NUM_RANDOM_SPHERES]Material = undefined;
+    var n_materials: usize = 0;
+    const mat_gnd = Material{ .lambertian = Lambertian{ .albedo = Colour{ .x = 0.5, .y = 0.5, .z = 0.5 } } };
+    const sphere_gnd = Hittable{ .sphere = Sphere{ .centre = Point{ .y = -1000 }, .radius = 1000, .mat = &mat_gnd } };
     world.add(&sphere_gnd);
-    world.add(&sphere_centre);
-    world.add(&sphere_left);
-    world.add(&inner_sphere_left);
-    world.add(&sphere_right);
+    var a: i32 = -11;
+    while (a < 11) : (a += 1) {
+        var b: i32 = -11;
+        while (b < 11) : (b += 1) {
+            const choose_mat = randf();
+            const centre = Point{ .x = @intToFloat(f32, a) + 0.9 * randf(), .y = 0.2, .z = @intToFloat(f32, b) + 0.9 * randf() };
+
+            if (Vec.subv(&[_]Vec{ centre, Point{ .x = 4, .y = 0.2 } }).len() > 0.9) {
+                if (choose_mat < 0.8) {
+                    const albedo = Vec.addv(&[_]Vec{ Vec.rand(), Vec.rand() });
+                    materials[n_materials] = Material{ .lambertian = Lambertian{ .albedo = albedo } };
+                } else if (choose_mat < 0.96) {
+                    const albedo = Vec.randmm(0.5, 1);
+                    const fuzz = randfmm(0, 0.5);
+                    materials[n_materials] = Material{ .metal = Metal{ .albedo = albedo, .fuzz = fuzz } };
+                } else {
+                    materials[n_materials] = Material{ .dielectric = Dielectric{ .refr_idx = 1.5 } };
+                }
+                const sphere = Hittable{ .sphere = Sphere{ .centre = centre, .radius = 0.2, .mat = &materials[n_materials] } };
+                n_materials += 1;
+                world.add(&sphere);
+            }
+        }
+    }
+    const mat1 = Material{ .dielectric = Dielectric{ .refr_idx = 1.5 } };
+    const mat2 = Material{ .lambertian = Lambertian{ .albedo = Colour{ .x = 0.4, .y = 0.2, .z = 0.1 } } };
+    const mat3 = Material{ .metal = Metal{ .albedo = Colour{ .x = 0.7, .y = 0.6, .z = 0.5 }, .fuzz = 0.0 } };
+    const sphere1 = Hittable{ .sphere = Sphere{ .centre = Point{ .y = 1 }, .radius = 1, .mat = &mat1 } };
+    const sphere2 = Hittable{ .sphere = Sphere{ .centre = Point{ .x = -4, .y = 1 }, .radius = 1, .mat = &mat2 } };
+    const sphere3 = Hittable{ .sphere = Sphere{ .centre = Point{ .x = 4, .y = 1 }, .radius = 1, .mat = &mat3 } };
+    world.add(&sphere1);
+    world.add(&sphere2);
+    world.add(&sphere3);
 
     // Camera
     var cam = Camera{};
