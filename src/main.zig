@@ -66,6 +66,10 @@ pub fn main() anyerror!void {
     const image_height = @floatToInt(i32, @intToFloat(f32, image_width) / aspect_ratio);
     const samples_per_pixel = 100;
     const max_depth = 50;
+    const vfov = 20.0;
+    const lookfrom = Point{ .x = -2, .y = 2, .z = 1 };
+    const lookat = Point{ .z = -1 };
+    const vup = Vec{ .y = 1 };
 
     // World
     var world = HittableList{};
@@ -76,7 +80,7 @@ pub fn main() anyerror!void {
     const sphere_gnd = Hittable{ .sphere = Sphere{ .centre = Point{ .y = -100.5, .z = -1 }, .radius = 100, .mat = &mat_gnd } };
     const sphere_centre = Hittable{ .sphere = Sphere{ .centre = Point{ .z = -1 }, .radius = 0.5, .mat = &mat_centre } };
     const sphere_left = Hittable{ .sphere = Sphere{ .centre = Point{ .x = -1, .z = -1 }, .radius = 0.5, .mat = &mat_left } };
-    const inner_sphere_left = Hittable{ .sphere = Sphere{ .centre = Point{ .x = -1, .z = -1 }, .radius = -0.4, .mat = &mat_left } };
+    const inner_sphere_left = Hittable{ .sphere = Sphere{ .centre = Point{ .x = -1, .z = -1 }, .radius = -0.45, .mat = &mat_left } };
     const sphere_right = Hittable{ .sphere = Sphere{ .centre = Point{ .x = 1, .z = -1 }, .radius = 0.5, .mat = &mat_right } };
     world.add(&sphere_gnd);
     world.add(&sphere_centre);
@@ -86,7 +90,7 @@ pub fn main() anyerror!void {
 
     // Camera
     var cam = Camera{};
-    cam.init();
+    cam.init(&lookfrom, &lookat, &vup, vfov, aspect_ratio);
 
     var file = try std.fs.cwd().createFile("img.ppm", .{});
     defer file.close();

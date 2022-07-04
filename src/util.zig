@@ -40,3 +40,7 @@ pub fn reflectance(cosine: f32, ref_idx: f32) f32 {
     r0 = r0 * r0;
     return r0 + (1 - r0) * std.math.pow(f32, 1 - cosine, 5);
 }
+
+pub fn degToRad(x: f32) f32 {
+    return x * std.math.pi / 180;
+}

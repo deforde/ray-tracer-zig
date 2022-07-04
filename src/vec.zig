@@ -23,8 +23,9 @@ pub const Vec = struct {
         return self.x * other.x + self.y * other.y + self.z * other.z;
     }
 
-    // pub fn cross(self: *Vec, other: *Vec) Vec {
-    // }
+    pub fn cross(self: *const Vec, other: *const Vec) Vec {
+        return Vec{ .x = self.y * other.z - self.z * other.y, .y = self.z * other.x - self.x * other.z, .z = self.x * other.y - self.y * other.x };
+    }
 
     pub fn randmm(min: f32, max: f32) Vec {
         return Vec{
