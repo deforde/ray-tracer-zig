@@ -18,6 +18,8 @@ const writeColour = @import("util.zig").writeColour;
 
 const MAX_NUM_RANDOM_SPHERES = 23 * 23;
 const TOTAL_NUM_OBJECTS = MAX_NUM_RANDOM_SPHERES + 4;
+const RANDOM_SPHERE_IDX_MAX = (@floatToInt(i32, std.math.sqrt(MAX_NUM_RANDOM_SPHERES)) - 1) / 2;
+const RANDOM_SPHERE_IDX_MIN = -RANDOM_SPHERE_IDX_MAX;
 
 fn rayColour(r: *const Ray, world: *const HittableList, depth: i32) anyerror!Colour {
     if (depth <= 0) {
@@ -84,16 +86,16 @@ pub fn main() anyerror!void {
     const mat_gnd = Material{ .lambertian = Lambertian{ .albedo = Colour{ .x = 0.5, .y = 0.5, .z = 0.5 } } };
     const sphere_gnd = Hittable{ .sphere = Sphere{ .centre = Point{ .y = -1000 }, .radius = 1000, .mat = &mat_gnd } };
     world.add(&sphere_gnd);
-    var a: i32 = -11;
-    while (a < 11) : (a += 1) {
-        var b: i32 = -11;
-        while (b < 11) : (b += 1) {
+    var a: i32 = RANDOM_SPHERE_IDX_MIN;
+    while (a < RANDOM_SPHERE_IDX_MAX) : (a += 1) {
+        var b: i32 = RANDOM_SPHERE_IDX_MIN;
+        while (b < RANDOM_SPHERE_IDX_MAX) : (b += 1) {
             const choose_mat = randf();
             const centre = Point{ .x = @intToFloat(f32, a) + 0.9 * randf(), .y = 0.2, .z = @intToFloat(f32, b) + 0.9 * randf() };
 
             if (Vec.subv(&[_]Vec{ centre, Point{ .x = 4, .y = 0.2 } }).len() > 0.9) {
                 if (choose_mat < 0.8) {
-                    const albedo = Vec.addv(&[_]Vec{ Vec.rand(), Vec.rand() });
+                    const albedo = Vec.mulv(&[_]Vec{ Vec.rand(), Vec.rand() });
                     materials[n_materials] = Material{ .lambertian = Lambertian{ .albedo = albedo } };
                 } else if (choose_mat < 0.96) {
                     const albedo = Vec.randmm(0.5, 1);
