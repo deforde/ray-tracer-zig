@@ -68,10 +68,10 @@ fn hitSphere(centre: *const Point, radius: f32, r: *const Ray) f32 {
 pub fn main() anyerror!void {
     // Image
     const aspect_ratio = 3.0 / 2.0;
-    const image_width = 400;
+    const image_width = 1200;
     const image_height = @floatToInt(i32, @intToFloat(f32, image_width) / aspect_ratio);
-    const samples_per_pixel = 100;
-    const max_depth = 50;
+    const samples_per_pixel = 500;
+    const max_depth = 100;
     const vfov = 20.0;
     const lookfrom = Point{ .x = 13, .y = 2, .z = 3 };
     const lookat = Point{};
